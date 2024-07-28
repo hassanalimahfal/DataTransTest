@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">مرحبا بكم في اختبار احمد مظهر </h1>
+    <h2>Hassan Ali Mahfal</></h2>
+    <button class="btn btn-primary notification">Notification</button>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");   
+
+        <script>
+            $(document).ready(function () {
+
+                $(".notification").click(function () {
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/Notification/sendNotification",
+                        success: function (result) {
+                            //alert(result);
+                        },
+                        error: function (req, status, error) {
+                            alert(status);
+                        }
+                    });
+                    
+                });
+
+            });
+        </script>
+    }
+}

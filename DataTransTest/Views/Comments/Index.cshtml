@@ -1,0 +1,297 @@
+﻿@model CommentViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    int counter = 1;
+}
+
+<h1>Index</h1>
+<hr />
+<p>
+    <a class="btn btn-success btnCreate mt-2"><i class="bi bi-plus-lg"></i> Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment!.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment!.Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment!.Post)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment!.AppUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Comments)
+        {
+            <tr>
+                <td>
+                    @* @Html.DisplayFor(modelItem => item.Id) *@
+                    @(counter++)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Post!.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AppUser!.FullName)
+                </td>
+                <td>
+                    <a class="btn btn-primary btnEdit" data="@item.Post!.Id"><i class="bi bi-pencil-square"></i> Edit</a> |
+                    <a class="btn btn-danger btnDelete"><i class="bi bi-trash3"></i> Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@*------------------- Create --------------------*@
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasCreate" aria-labelledby="offcanvasWithBothOptionsLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Add Comment</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-action="Create" class="form-create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Comment!.Content" class="control-label"></label>
+                        <input asp-for="Comment!.Content" class="form-control comment-content-create" />
+                        <span asp-validation-for="Comment!.Content" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Comment!.PostId" class="control-label"></label>
+                        <select asp-for="Comment!.PostId" class="form-control comment-post-id-create" asp-items="ViewBag.PostId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Comment!.AppUserId" class="control-label"></label>
+                        <select asp-for="Comment!.AppUserId" class="form-control comment-app-user-id-create" asp-items="ViewBag.AppUserId"></select>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" value="Save" class="btn btn-primary mt-4 submit-create">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*------------------- Edit --------------------*@
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasEdit" aria-labelledby="offcanvasWithBothOptionsLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Edit Comment</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-action="Edit" class="form-edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Comment!.Id" class="comment-id-edit" />
+                    <div class="form-group">
+                        <label asp-for="Comment!.Content" class="control-label"></label>
+                        <input asp-for="Comment!.Content" class="form-control comment-content-edit" />
+                        <span asp-validation-for="Comment!.Content" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Comment!.PostId" class="control-label"></label>
+                        <select asp-for="Comment!.PostId" class="form-control comment-post-id-edit" asp-items="ViewBag.PostId"></select>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" value="Save" class="btn btn-primary mt-4 submit-edit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@*------------------- Delete --------------------*@
+
+<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Delete" class="form-delete">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Comment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this?</p>
+                    <input type="hidden" asp-for="Comment!.Id" class="comment-id-delete" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
+                    <input type="button" value="Yes" class="btn btn-danger submit-delete" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+        <script>
+            $(document).ready(function () {
+
+                $(".btnCreate").click(function () {
+
+                    $(".comment-content-create").val(null);
+                    $(".comment-post-id-create").val(null);
+                    $(".comment-app-user-id-create").val(null);
+
+                    $("#offcanvasCreate").offcanvas("show");
+
+                    $(".submit-create").click(function () {
+
+                        var jsonData = {
+                            "content": $(".comment-content-create").val() ?? "",
+                            "postId": $(".comment-post-id-create").val() ?? 1,
+                            "appUserId": $(".comment-app-user-id-create").val() ?? "1"
+                        }
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/api/Comments",
+                            data: JSON.stringify(jsonData),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function (result) {
+                                $.ajax({
+                                    url: "",
+                                    context: document.body,
+                                    success: function (s, x) {
+                                        $(this).html(s);
+                                    }
+                                });
+
+                                //Swal.fire({
+                                //   title: "Good job!",
+                                //   text: "You clicked the button!",
+                                //    icon: "success"
+                                //});
+                            },
+                            error: function (req, status, error) {
+                                alert(status);
+                            }
+                        });
+
+                    });
+
+                });
+
+
+                $(".btnEdit").click(function () {
+
+                    var tds = $(this).closest("tr").find("td");
+
+
+
+                    var id = $(tds).eq(0).text().trim();
+                    var content = $(tds).eq(1).text().trim();
+                    var postId = $(this).attr("data").trim();
+
+                    $(".comment-id-edit").val(id);
+                    $(".comment-content-edit").val(content);
+                    $(".comment-post-id-edit").val(postId).attr("selected", "selected");
+
+                    $("#offcanvasEdit").offcanvas("show");
+
+                    $(".submit-edit").click(function () {
+
+                        var jsonData = {
+                            "id": $(".comment-id-edit").val(),
+                            "content": $(".comment-content-edit").val(),
+                            "postId": $(".comment-post-id-edit").val()
+                        }
+
+                        $.ajax({
+                            type: "PUT",
+                            url: "/api/Comments/" + id,
+                            data: JSON.stringify(jsonData),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function (result) {
+                                $.ajax({
+                                    url: "",
+                                    context: document.body,
+                                    success: function (s, x) {
+                                        $(this).html(s);
+                                    }
+                                });
+
+                                //alert(result);
+                            },
+                            error: function (req, status, error) {
+                                alert(status);
+                            }
+                        });
+
+                        //$(".form-edit").attr("action", window.location.href + "/Edit/" + id);
+                    });
+                });
+
+
+                $(".btnDelete").click(function () {
+
+                    var tds = $(this).closest("tr").find("td");
+
+                    var id = $(tds).eq(0).text().trim();
+
+                    $(".comment-id-delete").val(id);
+
+                    $("#modalDelete").modal("show");
+
+                    $(".submit-delete").click(function () {
+
+                        $.ajax({
+                            type: "DELETE",
+                            url: "/api/Comments/" + id,
+                            success: function (result) {
+                                $.ajax({
+                                    url: "",
+                                    context: document.body,
+                                    success: function (s, x) {
+                                        $(this).html(s);
+                                    }
+                                });
+
+                                //alert(result);
+                            },
+                            error: function (req, status, error) {
+                                alert(status);
+                            }
+                        });
+
+                        //$(".form-delete").attr("action", window.location.href + "/Delete/" + id);
+
+                    });
+                });
+
+            });
+        </script>
+    }
+}
+
